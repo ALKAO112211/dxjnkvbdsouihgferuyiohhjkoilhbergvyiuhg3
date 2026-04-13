@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>إلى رورتي الغالية 💜</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Serif+Arabic:wght@300;400;700&family=Lemonada:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --navy: #080c1a;
+      --purple: #6b21a8;
+      --gold: #c9a84c;
+      --gold-light: #f0d080;
+      --gold-glow: rgba(201, 168, 76, 0.3);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--navy);
+      color: #e8d5f0;
+      font-family: 'Noto Serif Arabic', serif;
+      overflow-x: hidden;
+      direction: rtl;
+    }
+
+    @media (pointer: fine) { body { cursor: none; } }
+
+    /* ══ شاشة الدخول ══ */
+    #splash {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      background: var(--navy);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 30px 20px;
+      transition: opacity 0.9s ease, visibility 0.9s ease;
+    }
+
+    #splash.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .splash-bg {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .splash-petal {
+      position: absolute;
+      top: -60px;
+      border-radius: 50% 0 50% 0;
+      opacity: 0.65;
+      animation: petalFall linear infinite;
+    }
+
+    .splash-star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      opacity: 0;
+      animation: twinkle ease-in-out infinite;
+    }
+
+    .splash-heart {
+      font-size: clamp(70px, 18vw, 120px);
+      animation: heartbeat 1.6s ease-in-out infinite;
+      filter: drop-shadow(0 0 28px rgba(155,28,28,0.7));
+      margin-bottom: 28px;
+      position: relative;
+      z-index: 1;
+      line-height: 1;
+    }
+
+    .splash-title {
+      font-family: 'Lemonada', cursive;
+      font-size: clamp(26px, 7vw, 54px);
+      color: var(--gold-light);
+      text-shadow: 0 0 30px var(--gold-glow);
+      line-height: 1.6;
+      margin-bottom: 12px;
+      font-weight: 600;
+      position: relative;
+      z-index: 1;
+    }
+
+    .splash-sub {
+      font-family: 'Noto Serif Arabic', serif;
+      font-size: clamp(14px, 3.5vw, 18px);
+      color: #b89ac8;
+      margin-bottom: 48px;
+      line-height: 1.9;
+      position: relative;
+      z-index: 1;
+    }
+
+    #enter-btn {
+      font-family: 'Lemonada', cursive;
+      font-size: clamp(16px, 4.5vw, 21px);
+      color: var(--navy);
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+      border: none;
+      padding: 18px 52px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: 700;
+      position: relative;
+      z-index: 1;
+      transition: transform 0.2s ease, box-shadow 0.3s ease;
+      box-shadow: 0 0 30px rgba(201,168,76,0.45), 0 4px 20px rgba(0,0,0,0.4);
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      min-height: 56px;
+    }
+
+    #enter-btn:hover, #enter-btn:active { transform: scale(1.06); box-shadow: 0 0 55px rgba(201,168,76,0.65), 0 4px 28px rgba(0,0,0,0.5); }
+
+    .splash-hint {
+      margin-top: 18px;
+      font-family: 'Noto Serif Arabic', serif;
+      font-size: 13px;
+      color: rgba(201,168,76,0.45);
+      position: relative;
+      z-index: 1;
+      animation: blink 2.5s ease-in-out infinite;
+    }
+
+    @keyframes blink { 0%,100%{opacity:.4} 50%{opacity:.9} }
+
+    /* ══ كيرسور ══ */
+    #cursor {
+      position: fixed;
+      width: 12px; height: 12px;
+      background: var(--gold-light);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 8px var(--gold);
+      display: none;
+    }
+
+    @media (pointer: fine) { #cursor { display: block; } }
+
+    /* ══ قلوب المؤشر ══ */
+    .trail-heart {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9998;
+      opacity: 1;
+      transform: translate(-50%, -50%);
+      animation: trailFade 1.2s ease-out forwards;
+      color: var(--gold-light);
+    }
+
+    @keyframes trailFade {
+      0%   { opacity: .9; transform: translate(-50%,-50%) scale(1); }
+      100% { opacity: 0;  transform: translate(-50%,-180%) scale(.4); }
+    }
+
+    /* ══ بتلات الصفحة ══ */
+    .petal {
+      position: fixed;
+      top: -60px;
+      border-radius: 50% 0 50% 0;
+      opacity: .75;
+      pointer-events: none;
+      z-index: 1;
+      animation: petalFall linear infinite;
+    }
+
+    @keyframes petalFall {
+      0%   { top:-60px; transform:translateX(0) rotate(0deg); opacity:.8; }
+      100% { top:110vh;  transform:translateX(100px) rotate(540deg); opacity:0; }
+    }
+
+    /* ══ النجوم ══ */
+    .star {
+      position: fixed;
+      background: white;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0;
+      animation: twinkle ease-in-out infinite;
+    }
+
+    @keyframes twinkle { 0%,100%{opacity:0} 50%{opacity:.7} }
+    @keyframes heartbeat { 0%,100%{transform:scale(1)} 14%{transform:scale(1.22)} 28%{transform:scale(1)} 42%{transform:scale(1.16)} 56%{transform:scale(1)} }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+    @keyframes scrollPulse { 0%,100%{transform:scaleY(1);opacity:1} 50%{transform:scaleY(.6);opacity:.4} }
+
+    /* ══ الهيدر ══ */
+    header {
+      position: fixed;
+      top:0; left:0; right:0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px 24px;
+      background: linear-gradient(to bottom, rgba(8,12,26,.95), transparent);
+    }
+
+    .logo { display:flex; align-items:center; gap:12px; }
+    .logo-heart { position:relative; width:54px; height:50px; }
+    .logo-heart svg { width:100%; height:100%; filter:drop-shadow(0 0 8px var(--gold)); }
+
+    .logo-letters {
+      position:absolute; inset:0;
+      display:flex; align-items:center; justify-content:center;
+      font-family:'Lemonada',cursive; font-size:15px;
+      color:var(--navy); font-weight:700; padding-bottom:4px;
+    }
+
+    .logo-text {
+      font-family:'Lemonada',cursive; font-size:20px;
+      color:var(--gold-light); letter-spacing:3px;
+      text-shadow:0 0 20px var(--gold-glow);
+    }
+
+    /* ══ الهيرو ══ */
+    #hero {
+      min-height:100vh;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      text-align:center;
+      padding:110px 24px 60px;
+      position:relative; z-index:2;
+    }
+
+    .hero-title {
+      font-family:'Lemonada',cursive;
+      font-size:clamp(34px,8vw,78px);
+      color:var(--gold-light);
+      text-shadow:0 0 40px var(--gold-glow),0 0 80px rgba(201,168,76,.15);
+      opacity:0; animation:fadeUp 2s ease .3s forwards;
+      line-height:1.5; font-weight:600;
+    }
+
+    .hero-divider {
+      width:180px; height:1px;
+      background:linear-gradient(to right,transparent,var(--gold),transparent);
+      margin:24px auto;
+      opacity:0; animation:fadeIn 2s ease 1.3s forwards;
+    }
+
+    .hero-sub {
+      font-family:'Noto Serif Arabic',serif;
+      font-size:clamp(15px,3vw,20px); font-weight:300;
+      color:#d4b8e0; max-width:600px; line-height:2.3;
+      opacity:0; animation:fadeUp 2s ease 1.6s forwards;
+      padding:0 10px;
+    }
+
+    .scroll-hint {
+      margin-top:50px;
+      opacity:0; animation:fadeIn 2s ease 2.8s forwards;
+      color:var(--gold); font-size:13px; letter-spacing:2px;
+      font-family:'Noto Naskh Arabic',serif;
+    }
+
+    .scroll-hint::after {
+      content:''; display:block;
+      width:1px; height:36px;
+      background:linear-gradient(to bottom,var(--gold),transparent);
+      margin:10px auto 0;
+      animation:scrollPulse 2s ease-in-out infinite;
+    }
+
+    /* ══ الأقسام ══ */
+    section {
+      position:relative; z-index:2;
+      padding:80px 24px; max-width:860px; margin:0 auto;
+    }
+
+    .section-label {
+      font-family:'Lemonada',cursive;
+      font-size:clamp(26px,6vw,38px);
+      color:var(--gold-light); text-align:center;
+      margin-bottom:10px;
+      text-shadow:0 0 20px var(--gold-glow); font-weight:600;
+    }
+
+    .section-rule {
+      width:110px; height:1px;
+      background:linear-gradient(to right,transparent,var(--gold),transparent);
+      margin:0 auto 44px;
+    }
+
+    /* ══ السرّ ══ */
+    #secret-zone { display:flex; flex-direction:column; align-items:center; }
+
+    #secret-btn {
+      font-family:'Lemonada',cursive;
+      font-size:clamp(15px,4vw,18px);
+      color:var(--gold-light); background:transparent;
+      border:1px solid var(--gold);
+      padding:14px 36px; border-radius:40px; cursor:pointer;
+      transition:all .4s ease; position:relative; overflow:hidden;
+      -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+      min-height:52px;
+    }
+
+    #secret-btn::before {
+      content:''; position:absolute; inset:0;
+      background:radial-gradient(circle at center,rgba(201,168,76,.15),transparent 70%);
+      opacity:0; transition:opacity .4s;
+    }
+
+    #secret-btn:hover,#secret-btn:active { box-shadow:0 0 20px var(--gold-glow),0 0 40px var(--gold-glow); transform:translateY(-2px); }
+    #secret-btn:hover::before { opacity:1; }
+
+    #secret-msg { display:none; text-align:center; animation:revealMsg 1s ease forwards; }
+
+    @keyframes revealMsg { from{opacity:0;transform:scale(.8)} to{opacity:1;transform:scale(1)} }
+
+    .pulse-heart-wrap {
+      font-size:80px;
+      animation:heartbeat 1.4s ease-in-out infinite;
+      display:block; margin-bottom:20px;
+      filter:drop-shadow(0 0 16px rgba(155,28,28,.8));
+    }
+
+    .secret-text {
+      font-family:'Lemonada',cursive;
+      font-size:clamp(20px,4.5vw,32px);
+      color:var(--gold-light); line-height:1.9;
+      text-shadow:0 0 20px var(--gold-glow);
+      max-width:500px; font-weight:400; padding:0 10px;
+    }
+
+    /* ══ الاقتباسات ══ */
+    #quotes-section { text-align:center; }
+
+    .quote-cards {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:20px;
+    }
+
+    .q-card {
+      background:rgba(107,33,168,.09);
+      border:1px solid rgba(201,168,76,.18);
+      border-radius:16px; padding:28px 20px;
+      transition:transform .3s ease,box-shadow .3s ease;
+    }
+
+    .q-card:hover { transform:translateY(-6px); box-shadow:0 8px 32px rgba(107,33,168,.25),0 0 0 1px rgba(201,168,76,.3); }
+
+    .q-icon { font-size:24px; margin-bottom:12px; filter:drop-shadow(0 0 6px rgba(201,168,76,.5)); }
+
+    .q-text {
+      font-family:'Noto Serif Arabic',serif;
+      font-size:clamp(14px,3.2vw,17px);
+      line-height:2; color:#d4b8e0; font-weight:300;
+    }
+
+    /* ══ زر الموسيقى ══ */
+    #audio-btn {
+      position:fixed; bottom:24px; left:24px; z-index:200;
+      width:50px; height:50px; border-radius:50%;
+      border:1px solid var(--gold);
+      background:rgba(8,12,26,.88);
+      color:var(--gold-light); font-size:18px; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      transition:all .3s ease;
+      backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+      -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+    }
+
+    #audio-btn:hover,#audio-btn:active { box-shadow:0 0 16px var(--gold-glow); transform:scale(1.1); }
+
+    /* ══ الفوتر ══ */
+    footer {
+      text-align:center; padding:50px 20px;
+      position:relative; z-index:2;
+      border-top:1px solid rgba(201,168,76,.1);
+    }
+
+    footer p {
+      font-family:'Lemonada',cursive;
+      font-size:clamp(16px,4vw,20px);
+      color:var(--gold); opacity:.85;
+      text-shadow:0 0 12px var(--gold-glow); line-height:1.8;
+    }
+
+    .ornament { text-align:center; color:var(--gold); font-size:18px; opacity:.5; letter-spacing:8px; margin:10px 0 0; }
+
+    @media (max-width:480px) {
+      header { padding:12px 16px; }
+      section { padding:60px 16px; }
+      .quote-cards { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ شاشة الدخول ══ -->
+  <div id="splash">
+    <div class="splash-bg" id="splash-bg"></div>
+
+    <div class="splash-heart">♥</div>
+    <h1 class="splash-title">لكي وحدكِ<br>رورتي الغالية</h1>
+    <p class="splash-sub">هديّة صغيرة من قلب يحبّكِ كثيراً</p>
+    <button id="enter-btn">✦ اضغطي هنا ✦</button>
+    <p class="splash-hint">اضغطي للدخول</p>
+  </div>
+
+  <!-- ══ الصوت ══ -->
+  <audio id="bg-audio" loop preload="auto">
+    <source src="https://cdn.discordapp.com/attachments/1440476415593156638/1493324152113729616/r07qxo_-_RDownload.mp3?ex=69de8dfe&is=69dd3c7e&hm=7eadcb932c42ecbec18b4def95771fb5cbc28bf81e892b95e1c5448e04184f93&" type="audio/mpeg" />
+  </audio>
+  <button id="audio-btn" title="تشغيل / إيقاف">♪</button>
+  <div id="cursor"></div>
+
+  <!-- ══ الهيدر ══ -->
+  <header>
+    <div class="logo">
+      <div class="logo-heart">
+        <svg viewBox="0 0 100 90" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="hg" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#f0d080"/>
+              <stop offset="100%" stop-color="#c9a84c"/>
+            </linearGradient>
+          </defs>
+          <path d="M50 82 C50 82 8 54 8 28 C8 14 18 6 30 6 C38 6 45 11 50 18 C55 11 62 6 70 6 C82 6 92 14 92 28 C92 54 50 82 50 82Z" fill="url(#hg)" stroke="#c9a84c" stroke-width="1.5"/>
+        </svg>
+        <div class="logo-letters">R &amp; A</div>
+      </div>
+      <span class="logo-text">R &amp; A</span>
+    </div>
+  </header>
+
+  <!-- ══ الهيرو ══ -->
+  <section id="hero">
+    <h1 class="hero-title">إلى رورتي الجميلة</h1>
+    <div class="hero-divider"></div>
+    <p class="hero-sub">
+     تدري وش أجمل ما في دنيتي؟<br>
+     انك في حياتي,<br>
+     إنتي النعمة اللي ما وفّاها الشكر,<br>
+      ووجودكِ إلى جانبي هو أعظم نعمةٍ  .
+    </p>
+    <div class="scroll-hint">انزلي تحت وانتي ساكته مو عشان مدحناكي شوي</div>
+  </section>
+
+  <!-- ══ السرّ ══ -->
+  <section id="secret-zone">
+    <div class="section-label">اضغطي الزر و شوف السر الحلو زيك</div>
+    <div class="section-rule"></div>
+    <div>
+      <button id="secret-btn">✦ اضغطي لتعرفي السرّ ✦</button>
+      <div id="secret-msg">
+        <span class="pulse-heart-wrap">♥</span>
+        <p class="secret-text">أحبّكِ أكثر ممّا تتخيّلين،<br>لكي قلبي إلى الأبد، من أيوب.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ الاقتباسات ══ -->
+  <section id="quotes-section">
+    <div class="section-label"> وش ودي اقول و وش لي في قلبي </div>
+    <div class="section-rule"></div>
+    <div class="quote-cards">
+      <div class="q-card">
+        <div class="q-icon">✦</div>
+        <p class="q-text">«اول شي انا احبك  و اثق فيك و مدري اسحك تحبيني بس باقي ما تثقين صدقيني زي ما قلتي لي و لين الحين ما نسيت  لي قلتيه لي في النوت Just between us فا اتمنى زي ما اعطيتك الثقه تعطيني  واحبك»</p>
+      </div>
+      <div class="q-card">
+        <div class="q-icon">♥</div>
+        <p class="q-text">«ثاني شي تراني احبك حب ما يعلم في لي ربي ما ادري كيف اوصله لكي و مدري اذا تبادليني نفس الشعور بس صدقيني ما ابي لكي لي كل الخير و التوفيق و اتمنى تبادليني نفس الشي و I love you»</p>
+      </div>
+      <div class="q-card">
+        <div class="q-icon">✦</div>
+        <p class="q-text">ثالث شي ثقتي فيكِ هي اللي خلتني أختاركِ موطن.. أبي نفس الثقة منكِ، وأوعدكِ بوطن ما يخذلكِ»</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ الفوتر ══ -->
+  <footer>
+    <p>صُنعت بكلّ الحبّ من أيوب إلى رورتي ♥</p>
+    <div class="ornament">✦ · · ✦ · · ✦</div>
+  </footer>
+
+  <script>
+    const audio    = document.getElementById('bg-audio');
+    const audioBtn = document.getElementById('audio-btn');
+    const splash   = document.getElementById('splash');
+    const splashBg = document.getElementById('splash-bg');
+    let playing = false;
+    let lastHeart = 0;
+    const PC = ['#9b1c1c','#7f1d1d','#6b21a8','#7e22ce','#831843'];
+
+    /* بتلات ونجوم شاشة البداية */
+    for (let i = 0; i < 18; i++) {
+      const p = document.createElement('div');
+      p.className = 'splash-petal';
+      const w = 8 + Math.random() * 14;
+      p.style.cssText = `width:${w}px;height:${w*.7}px;left:${Math.random()*100}%;background:${PC[Math.floor(Math.random()*PC.length)]};animation-duration:${6+Math.random()*10}s;animation-delay:${-Math.random()*12}s;`;
+      splashBg.appendChild(p);
+    }
+    for (let i = 0; i < 60; i++) {
+      const s = document.createElement('div');
+      s.className = 'splash-star';
+      const sz = 1 + Math.random() * 2;
+      s.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${2+Math.random()*4}s;animation-delay:${Math.random()*5}s;`;
+      splashBg.appendChild(s);
+    }
+
+    /* الدخول */
+    document.getElementById('enter-btn').addEventListener('click', function() {
+      audio.volume = 0.45;
+      audio.play().then(() => { playing = true; audioBtn.textContent = '♫'; }).catch(() => {});
+      splash.classList.add('hidden');
+      buildPageEffects();
+    });
+
+    /* بتلات ونجوم الصفحة */
+    function buildPageEffects() {
+      for (let i = 0; i < 22; i++) {
+        const p = document.createElement('div');
+        p.className = 'petal';
+        const w = 8 + Math.random() * 14;
+        p.style.cssText = `width:${w}px;height:${w*.7}px;left:${Math.random()*100}vw;background:${PC[Math.floor(Math.random()*PC.length)]};animation-duration:${6+Math.random()*10}s;animation-delay:${-Math.random()*12}s;`;
+        document.body.appendChild(p);
+      }
+      for (let i = 0; i < 80; i++) {
+        const s = document.createElement('div');
+        s.className = 'star';
+        const sz = 1 + Math.random() * 2;
+        s.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}vw;top:${Math.random()*100}vh;animation-duration:${2+Math.random()*4}s;animation-delay:${Math.random()*5}s;`;
+        document.body.appendChild(s);
+      }
+    }
+
+    /* قلوب المؤشر */
+    function spawnHeart(x, y) {
+      const now = Date.now();
+      if (now - lastHeart < 90) return;
+      lastHeart = now;
+      const h = document.createElement('div');
+      h.className = 'trail-heart';
+      h.textContent = '♥';
+      h.style.left = x + 'px';
+      h.style.top  = y + 'px';
+      h.style.fontSize = (10 + Math.random() * 9) + 'px';
+      document.body.appendChild(h);
+      setTimeout(() => h.remove(), 1200);
+    }
+
+    const cursor = document.getElementById('cursor');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top  = e.clientY + 'px';
+      spawnHeart(e.clientX, e.clientY);
+    });
+
+    document.addEventListener('touchmove', e => {
+      const t = e.touches[0];
+      spawnHeart(t.clientX, t.clientY);
+    }, { passive: true });
+
+    /* زر السرّ */
+    const secretBtn = document.getElementById('secret-btn');
+    const secretMsg = document.getElementById('secret-msg');
+    secretBtn.addEventListener('click', () => {
+      secretBtn.style.transition = 'all .5s ease';
+      secretBtn.style.opacity = '0';
+      secretBtn.style.transform = 'scale(0)';
+      setTimeout(() => { secretBtn.style.display = 'none'; secretMsg.style.display = 'block'; }, 500);
+    });
+
+    /* زر الموسيقى */
+    audioBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      if (playing) { audio.pause(); audioBtn.textContent = '♪'; }
+      else { audio.play().catch(()=>{}); audioBtn.textContent = '♫'; }
+      playing = !playing;
+    });
+  </script>
+</body>
+</html>
